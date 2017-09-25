@@ -86,7 +86,7 @@ class WeChatHandler(object):
         return self.is_msg_type('text') and ((self.input['Content'].split() or [None])[0] in commands)
 
     def is_math_expression(self):
-        return re.search('^[0-9\+\-\*\/\(\)]+$',self.input)
+        return self.is_msg_type('text') and re.search('^[0-9\+\-\*\/\(\)]+$',self.input['Content'])
 
     def url_help(self):
         return settings.get_url('u/help')
