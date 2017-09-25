@@ -65,3 +65,11 @@ class BookEmptyHandler(WeChatHandler):
 
     def handle(self):
         return self.reply_text(self.get_message('book_empty'))
+
+class MathExpressionHandler(WeChatHandler):
+
+    def check(self):
+        return self.is_math_expression()
+
+    def handle(self):
+        return self.reply_text(self.get_message('bind_account'))

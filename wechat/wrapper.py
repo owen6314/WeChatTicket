@@ -6,6 +6,8 @@ import json
 import logging
 import urllib.request
 import xml.etree.ElementTree as ET
+
+import re 
 from WeChatTicket.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
 from django.http import Http404, HttpResponse
@@ -82,6 +84,9 @@ class WeChatHandler(object):
 
     def is_text_command(self, *commands):
         return self.is_msg_type('text') and ((self.input['Content'].split() or [None])[0] in commands)
+
+    def is_math_expression(self):
+        return re.search('^[0123456789+-*/()]+$',self.input)
 
     def url_help(self):
         return settings.get_url('u/help')
