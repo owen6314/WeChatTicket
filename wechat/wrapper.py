@@ -88,6 +88,16 @@ class WeChatHandler(object):
     def is_math_expression(self):
         return self.is_msg_type('text') and re.search('^[0-9\+\-\*\/\(\)]+$',self.input['Content'])
 
+    def is_valid_math_expression(self):
+        try:
+            value = eval(self.input['Content'])
+            return True
+        except:
+            return False
+            
+    def get_math_expression_value(self):
+        return eval(self.input['Content'])
+
     def url_help(self):
         return settings.get_url('u/help')
 

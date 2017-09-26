@@ -66,10 +66,18 @@ class BookEmptyHandler(WeChatHandler):
     def handle(self):
         return self.reply_text(self.get_message('book_empty'))
 
-class MathExpressionHandler(WeChatHandler):
+class InvalidMathExpressionHandler(WeChatHandler):
 
     def check(self):
-        return self.is_math_expression()
+        return self.is_math_expression() and not self.is_valid_math_expression()
 
     def handle(self):
-        return self.reply_text(self.get_message('bind_account'))
+        return self.reply_text(self.get_message('invalid_math_expression'))
+
+class ValidMathExpressionHandler(WeChatHandler):
+
+    def check(self):
+        return self.is_math_expression() and self.is_valid_math_expression()
+
+    def handle(self):
+        return self.reply_text(self.get_message('bind_account')) 
