@@ -3,10 +3,19 @@ from codex.baseview import APIView
 
 from wechat.models import User
 
+import requests
 
 class UserBind(APIView):
 
     def validate_user(self):
+        test_url = "https://learn.tsinghua.edu.cn/MultiLanguage/lesson/teacher/loginteacher.jsp"
+        user_data = {
+            'userid':self.input['student_id'],
+            'userpass':self.input['password']
+        }
+        r = requests.post(test_url, user_data)
+        if 'window.alert' in r.text:
+            raise ValidateError
         """
         input: self.input['student_id'] and self.input['password']
         raise: ValidateError when validating failed
