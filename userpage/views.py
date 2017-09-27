@@ -15,7 +15,7 @@ class UserBind(APIView):
         }
         r = requests.post(test_url, user_data)
         if 'window.alert' in r.text:
-            raise ValidateError
+            raise ValidateError(self.input)
         """
         input: self.input['student_id'] and self.input['password']
         raise: ValidateError when validating failed
