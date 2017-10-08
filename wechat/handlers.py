@@ -28,7 +28,7 @@ class HelpOrSubscribeHandler(WeChatHandler):
 
     def check(self):
         return self.is_text('帮助', 'help') or self.is_event('scan', 'subscribe') or \
-               self.is_event_click(self.view.event_keys['help'])
+            self.is_event_click(self.view.event_keys['help'])
 
     def handle(self):
         return self.reply_single_news({
@@ -66,6 +66,7 @@ class BookEmptyHandler(WeChatHandler):
     def handle(self):
         return self.reply_text(self.get_message('book_empty'))
 
+
 class InvalidMathExpressionHandler(WeChatHandler):
 
     def check(self):
@@ -74,6 +75,7 @@ class InvalidMathExpressionHandler(WeChatHandler):
     def handle(self):
         return self.reply_text(self.get_message('invalid_math_expression'))
 
+
 class ValidMathExpressionHandler(WeChatHandler):
 
     def check(self):
@@ -81,4 +83,4 @@ class ValidMathExpressionHandler(WeChatHandler):
 
     def handle(self):
         math_result = self.get_math_expression_value()
-        return self.reply_text(self.get_message('math_result',math_result = math_result)) 
+        return self.reply_text(self.get_message('math_result', math_result=math_result))

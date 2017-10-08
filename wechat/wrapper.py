@@ -7,7 +7,7 @@ import logging
 import urllib.request
 import xml.etree.ElementTree as ET
 
-import re 
+import re
 from WeChatTicket.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
 from django.http import Http404, HttpResponse
@@ -86,7 +86,7 @@ class WeChatHandler(object):
         return self.is_msg_type('text') and ((self.input['Content'].split() or [None])[0] in commands)
 
     def is_math_expression(self):
-        return self.is_msg_type('text') and re.search('^[0-9\+\-\*\/\(\)]+$',self.input['Content'])
+        return self.is_msg_type('text') and re.search('^[0-9\+\-\*\/\(\)]+$', self.input['Content'])
 
     def is_valid_math_expression(self):
         try:
@@ -94,7 +94,7 @@ class WeChatHandler(object):
             return True
         except:
             return False
-            
+
     def get_math_expression_value(self):
         return eval(self.input['Content'])
 

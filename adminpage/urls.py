@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 #
 
-
-
 __author__ = "Epsirom"
 
 
-urlpatterns = []
+urlpatterns = [
+
+]

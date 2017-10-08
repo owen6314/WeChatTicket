@@ -2,7 +2,7 @@
 #
 from django.conf.urls import url
 
-from userpage.views import *
+from userpage.views import UserBind
 
 
 __author__ = "Epsirom"
