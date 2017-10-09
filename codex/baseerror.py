@@ -31,3 +31,10 @@ class ValidateError(BaseError):
 
     def __init__(self, msg):
         super(ValidateError, self).__init__(3, msg)
+
+
+#权限不足错误类型
+class PrivilegeError(BaseError):
+
+    def __init__(self, msg):
+        super(PrivilegeError, self).__init__(4, msg)
