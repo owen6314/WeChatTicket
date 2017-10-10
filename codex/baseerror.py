@@ -33,8 +33,15 @@ class ValidateError(BaseError):
         super(ValidateError, self).__init__(3, msg)
 
 
-#权限不足错误类型
+# 权限不足错误
 class PrivilegeError(BaseError):
 
     def __init__(self, msg):
         super(PrivilegeError, self).__init__(4, msg)
+
+
+# 数据库操作错误
+class DatabaseError(BaseError):
+
+    def __init__(self, msg):
+        super(PrivilegeError, self).__init__(5, msg)

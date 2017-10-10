@@ -1,5 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
+from wechat.models import Activity
+from .views import AdminLogin
 from codex.baseerror import ValidateError, PrivilegeError
 
 
@@ -21,11 +23,9 @@ class AdminLoginTest(TestCase):
         c = Client()
         response = c.post('/api/a/login', {"username": "ordinaryUser", "password": "12345678b"})
         self.assertEqual(response.status_code, 200)
-        # self.assertRaises(PrivilegeError)
 
     # 管理员登录，密码错误
     def test_login_superuser_wrong_password(self):
         c = Client()
         response = c.post('/api/a/login', {"username": "admin", "password": "12345678c"})
         self.assertEqual(response.status_code, 200)
-        # self.assertRaises(PrivilegeError)

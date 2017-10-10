@@ -1,6 +1,6 @@
 from codex.baseerror import ValidateError
 from codex.baseview import APIView
-from wechat.models import User
+from wechat.models import User, Activity, Ticket
 import requests
 
 
@@ -15,10 +15,6 @@ class UserBind(APIView):
         r = requests.post(test_url, user_data)
         if 'window.alert' in r.text:
             raise ValidateError(self.input)
-        """
-        input: self.input['student_id'] and self.input['password']
-        raise: ValidateError when validating failed
-        """
 
     def get(self):
         self.check_input('openid')
@@ -30,3 +26,15 @@ class UserBind(APIView):
         self.validate_user()
         user.student_id = self.input['student_id']
         user.save()
+
+
+class ActivityDetail(APIView):
+
+    def get(self):
+        self.check_input('id')
+
+
+class Ticket(APIView):
+
+    def get(self):
+        pass

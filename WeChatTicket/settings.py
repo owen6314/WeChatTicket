@@ -38,7 +38,7 @@ WECHAT_TOKEN = CONFIGS['WECHAT_TOKEN']
 WECHAT_APPID = CONFIGS['WECHAT_APPID']
 WECHAT_SECRET = CONFIGS['WECHAT_SECRET']
 
-ALLOWED_HOSTS =['*']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -155,6 +155,7 @@ STATIC_URL = '/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Site and URL
 SITE_DOMAIN = CONFIGS['SITE_DOMAIN'].rstrip('/')

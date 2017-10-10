@@ -168,7 +168,7 @@ class WeChatLib(object):
     @classmethod
     def get_wechat_access_token(cls):
         if datetime.datetime.now() >= cls.access_token_expire:
-            print("appid=%s secret=%s" %(cls.appid, cls.secret))
+            print("appid=%s secret=%s" % (cls.appid, cls.secret))
             res = cls._http_get(
                 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s' % (
                     cls.appid, cls.secret
