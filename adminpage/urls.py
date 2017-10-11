@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 #
 from django.conf.urls import url
-from adminpage.views import AdminLogin, AdminLogout, ActivityList, ActivityDelete, ActivityCreate, ImageLoader, ActivityDetail, ActivityMenu, ActivityCheckin
+from adminpage.views_admin import AdminLogin, AdminLogout
+from adminpage.views_activity import ActivityList, ActivityDelete, ActivityCreate, ImageLoader, ActivityDetail, ActivityMenu, ActivityCheckin
 
 
 __author__ = "Epsirom"

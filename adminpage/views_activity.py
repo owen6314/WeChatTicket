@@ -1,41 +1,12 @@
 from codex.baseview import APIView
-from codex.baseerror import ValidateError, PrivilegeError, DatabaseError
+from codex.baseerror import ValidateError, LogicError, PrivilegeError, DatabaseError
 from WeChatTicket import settings
 from wechat.models import Activity, Ticket
 from adminpage.models import Image
-from django.contrib import auth
-from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 import time
-
-
-class AdminLogin(APIView):
-
-    def validate_super_user(self):
-        username = self.input['username']
-        password = self.input['password']
-        user = auth.authenticate(username=username, password=password)
-        if not user:
-            raise ValidateError(self.input)
-        if not user.is_superuser:
-            raise PrivilegeError(self.input)
-        auth.login(self.request, user)
-
-    def get(self):
-        if not self.request.user.is_superuser:
-            raise ValidateError(self.input)
-
-    def post(self):
-        self.check_input('username', 'password')
-        self.validate_super_user()
-
-
-class AdminLogout(APIView):
-
-    def post(self):
-        if not self.request.user.is_superuser:
-            raise ValidateError(self.input)
-        auth.logout(self.request)
+from dateutil import parser
 
 
 class ActivityList(APIView):
@@ -64,7 +35,7 @@ class ActivityList(APIView):
 
 
 class ActivityDelete(APIView):
-    
+
     def post(self):
         self.check_input('id')
         try:
@@ -77,6 +48,9 @@ class ActivityCreate(APIView):
 
     def post(self):
         self.check_input('name', 'key', 'place', 'picUrl', 'startTime', 'endTime', 'bookStart', 'bookEnd', 'totalTickets', 'status')
+        print(self.input['startTime'])
+        self.input['startTime'] = parser.parse(self.input['startTime'])
+        print(self.input['bookStart'])
         Activity.objects.create(name=self.input['name'], key=self.input['key'], place=self.input['place'],
                                 description=self.input['description'], start_time=self.input['startTime'], pic_url=self.input['picUrl'],
                                 end_time=self.input['endTime'], book_start=self.input['bookStart'], book_end=self.input['bookEnd'],
@@ -118,6 +92,21 @@ class ActivityDetail(APIView):
         activity_dict['status'] = activity.status
         return activity_dict
 
+    def change_activity_detail(self, activity):
+        current_time = (int)(time.time())
+        # 所有情况下都可以修改
+        activity.description = self.input['description']
+        activity.pic_url = self.input['picUrl']
+        # 已发布活动不可修改
+        activity.name = self.input['name']
+        activity.place = self.input['place']
+        activity.status = self.input['status']
+        activity.save()
+
+    # 检查活动修改是否符合逻辑
+    def check_change(self, activity):
+        pass
+
     def get(self):
         self.check_input('id')
         choosen_activity = Activity.objects.get(id=self.input['id'])
@@ -125,7 +114,10 @@ class ActivityDetail(APIView):
         return choosen_activity_dict
 
     def post(self):
-        pass
+        self.check_input('id', 'name', 'place', 'picUrl', 'startTime', 'endTime', 'bookStart', 'bookEnd', 'totalTickets', 'status')
+        choosen_activity = Activity.objects.get(id=self.input['id'])
+        self.check_change(activity)
+        self.change_activity_detail(choosen_activity)
 
 
 class ActivityMenu(APIView):
