@@ -3,6 +3,8 @@ from wechat.models import Activity
 from .views_activity import ActivityList, ActivityDelete, ActivityCreate, ImageLoader, ActivityDetail, ActivityMenu, ActivityCheckin
 from datetime import datetime
 from django.utils import timezone
+
+
 class ActivityListTest(TestCase):
 
     def setUp(self):
@@ -13,4 +15,3 @@ class ActivityListTest(TestCase):
 
     def test_get(self):
         pass
-

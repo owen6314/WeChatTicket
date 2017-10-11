@@ -1,12 +1,11 @@
 from codex.baseview import APIView
-from codex.baseerror import ValidateError, PrivilegeError, DatabaseError
+from codex.baseerror import ValidateError, PrivilegeError, DatabaseError, LogicError
+from wechat.views import CustomWeChatView
 from WeChatTicket import settings
 from wechat.models import Activity, Ticket
 from adminpage.models import Image
-# from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 import time
-from django.utils import timezone
 
 
 class ActivityList(APIView):
@@ -139,8 +138,31 @@ class ActivityMenu(APIView):
 
 class ActivityCheckin(APIView):
 
-    def get(self):
-        pass
+    def checkin_ticket(self):
+        ticket = Ticket.objects.get(id=self.input['ticket'])
+        activity = Activity.objects.get(id=self.input['actId'])
+        if ticket.activity == activity and ticket.status == Ticket.STATUS_VALID:
+            ticket_info_dict = {}
+            ticket_info_dict['ticket'] = self.input['ticket']
+            ticket_info_dict['studentId'] = ticket.student_id
+            return ticket_info_dict
+        else:
+            raise ValidateError(self.input)
+
+    def checkin_student(self):
+        ticket_list = Ticket.objects.filter(student_id=self.input['studentId'])
+        activity = Activity.objects.get(id=self.input['actId'])
+        for ticket in ticket_list:
+            if ticket.activity == activity:
+                ticket_info_dict = {}
+                ticket_info_dict['ticket'] = self.input['ticket']
+                ticket_info_dict['studentId'] = ticket.student_id
+                return ticket_info_dict
+        raise ValidateError(self.input)
 
     def post(self):
-        pass
+        self.check_input('actId')
+        if 'ticket' in self.input.keys():
+            return self.checkin_ticket()
+        elif 'studentId' in self.input.keys():
+            return self.checkin_student()
