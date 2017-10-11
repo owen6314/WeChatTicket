@@ -1,12 +1,12 @@
 from codex.baseview import APIView
-from codex.baseerror import ValidateError, LogicError, PrivilegeError, DatabaseError
+from codex.baseerror import ValidateError, PrivilegeError, DatabaseError
 from WeChatTicket import settings
 from wechat.models import Activity, Ticket
 from adminpage.models import Image
 # from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 import time
-from dateutil import parser
+from django.utils import timezone
 
 
 class ActivityList(APIView):
@@ -44,13 +44,11 @@ class ActivityDelete(APIView):
             raise DatabaseError(self.input)
 
 
+# 时间存在问题
 class ActivityCreate(APIView):
 
     def post(self):
         self.check_input('name', 'key', 'place', 'picUrl', 'startTime', 'endTime', 'bookStart', 'bookEnd', 'totalTickets', 'status')
-        print(self.input['startTime'])
-        self.input['startTime'] = parser.parse(self.input['startTime'])
-        print(self.input['bookStart'])
         Activity.objects.create(name=self.input['name'], key=self.input['key'], place=self.input['place'],
                                 description=self.input['description'], start_time=self.input['startTime'], pic_url=self.input['picUrl'],
                                 end_time=self.input['endTime'], book_start=self.input['bookStart'], book_end=self.input['bookEnd'],
@@ -93,7 +91,6 @@ class ActivityDetail(APIView):
         return activity_dict
 
     def change_activity_detail(self, activity):
-        current_time = (int)(time.time())
         # 所有情况下都可以修改
         activity.description = self.input['description']
         activity.pic_url = self.input['picUrl']
@@ -101,6 +98,17 @@ class ActivityDetail(APIView):
         activity.name = self.input['name']
         activity.place = self.input['place']
         activity.status = self.input['status']
+
+        # 抢票开始后不可修改
+        activity.total_tickets = self.input['totalTickets']
+
+        # 活动结束后不可修改
+        activity.start_time = self.input['startTime']
+        activity.end_time = self.input['endTime']
+        # 已发布活动不可修改
+        activity.book_start = self.input['bookStart']
+        # 活动开始后不可修改
+        activity.book_end = self.input['bookEnd']
         activity.save()
 
     # 检查活动修改是否符合逻辑
@@ -116,7 +124,7 @@ class ActivityDetail(APIView):
     def post(self):
         self.check_input('id', 'name', 'place', 'picUrl', 'startTime', 'endTime', 'bookStart', 'bookEnd', 'totalTickets', 'status')
         choosen_activity = Activity.objects.get(id=self.input['id'])
-        self.check_change(activity)
+        self.check_change(choosen_activity)
         self.change_activity_detail(choosen_activity)
 
 
