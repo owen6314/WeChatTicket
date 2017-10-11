@@ -139,7 +139,7 @@ class ActivityMenu(APIView):
 class ActivityCheckin(APIView):
 
     def checkin_ticket(self):
-        ticket = Ticket.objects.get(id=self.input['ticket'])
+        ticket = Ticket.objects.get(unique_id=self.input['ticket'])
         activity = Activity.objects.get(id=self.input['actId'])
         if ticket.activity == activity and ticket.status == Ticket.STATUS_VALID:
             ticket_info_dict = {}
@@ -149,13 +149,13 @@ class ActivityCheckin(APIView):
         else:
             raise ValidateError(self.input)
 
-    def checkin_student(self):
+    def checkin_student_id(self):
         ticket_list = Ticket.objects.filter(student_id=self.input['studentId'])
         activity = Activity.objects.get(id=self.input['actId'])
         for ticket in ticket_list:
-            if ticket.activity == activity:
+            if ticket.activity == activity and ticket.status == Ticket.STATUS_VALID:
                 ticket_info_dict = {}
-                ticket_info_dict['ticket'] = self.input['ticket']
+                ticket_info_dict['ticket'] = ticket.unique_id
                 ticket_info_dict['studentId'] = ticket.student_id
                 return ticket_info_dict
         raise ValidateError(self.input)
@@ -165,4 +165,4 @@ class ActivityCheckin(APIView):
         if 'ticket' in self.input.keys():
             return self.checkin_ticket()
         elif 'studentId' in self.input.keys():
-            return self.checkin_student()
+            return self.checkin_student_id()
