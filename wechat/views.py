@@ -1,7 +1,9 @@
 from django.utils import timezone
 
 from wechat.wrapper import WeChatView, WeChatLib
-from wechat.handlers import *
+from wechat.handlers import ErrorHandler, DefaultHandler, HelpOrSubscribeHandler, UnbindOrUnsubscribeHandler, \
+     BookEmptyHandler, BindAccountHandler, InvalidMathExpressionHandler, \
+     ValidMathExpressionHandler, ActivityQueryHandler, TicketQueryHandler
 from wechat.models import Activity
 from WeChatTicket.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
@@ -11,7 +13,8 @@ class CustomWeChatView(WeChatView):
     lib = WeChatLib(WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET)
 
     handlers = [
-        HelpOrSubscribeHandler, UnbindOrUnsubscribeHandler, BindAccountHandler, BookEmptyHandler,InvalidMathExpressionHandler,ValidMathExpressionHandler
+        HelpOrSubscribeHandler, UnbindOrUnsubscribeHandler, BindAccountHandler, BookEmptyHandler,
+        ActivityQueryHandler, TicketQueryHandler, InvalidMathExpressionHandler, ValidMathExpressionHandler
     ]
     error_message_handler = ErrorHandler
     default_handler = DefaultHandler
@@ -86,7 +89,6 @@ class CustomWeChatView(WeChatView):
         :param activities: list of Activity
         :return: None
         """
-        print("update menu")
         if activities is not None:
             if len(activities) > 5:
                 cls.logger.warn('Custom menu with %d activities, keep only 5', len(activities))

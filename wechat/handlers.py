@@ -67,6 +67,25 @@ class BookEmptyHandler(WeChatHandler):
         return self.reply_text(self.get_message('book_empty'))
 
 
+# 抢啥：显示三天内可抢票活动
+class ActivityQueryHandler(WeChatHandler):
+
+    def check(self):
+        return self.is_text('近期活动') or self.is_text("我好无聊") or self.is_event_click(self.view.event_keys['book_what'])
+
+    def handle(self):
+        return self.reply_text(self.get_message('book_empty'))
+
+
+# 查票：查看用户自己获得的票
+class TicketQueryHandler(WeChatHandler):
+
+    def check(self):
+        return self.is_text('查票') or self.is_event_click(self.view.event_keys['get_ticket'])
+
+    def handle(self):
+        pass
+
 class InvalidMathExpressionHandler(WeChatHandler):
 
     def check(self):
