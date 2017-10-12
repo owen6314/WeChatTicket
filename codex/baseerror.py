@@ -44,4 +44,4 @@ class PrivilegeError(BaseError):
 class DatabaseError(BaseError):
 
     def __init__(self, msg):
-        super(PrivilegeError, self).__init__(5, msg)
+        super(DatabaseError, self).__init__(5, msg)

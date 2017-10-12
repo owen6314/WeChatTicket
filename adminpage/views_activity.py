@@ -38,9 +38,13 @@ class ActivityDelete(APIView):
     def post(self):
         self.check_input('id')
         try:
-            Activity.objects.get(id=self.input['id']).delete()
-        except:
+            activity = Activity.objects.get(id=self.input['id'])
+        except Activity.DoesNotExist:
             raise DatabaseError(self.input)
+        if activity.status == Activity.STATUS_DELETED:
+            raise LogicError(self.input)
+        activity.status = Activity.STATUS_DELETED
+        activity.save()
 
 
 # 时间存在问题
@@ -60,8 +64,7 @@ class ImageLoader(APIView):
         self.check_input('image')
         i = Image(image=self.request.FILES['image'])
         i.save()
-        # 发布时这里要改
-        image_url = settings.SITE_DOMAIN + "/wechat" + "/media" + "/upload_img/" + str(self.input['image'][0])
+        image_url = settings.SITE_DOMAIN + "/wechat/media/upload_img/" + str(self.input['image'][0])
         return image_url
 
 
