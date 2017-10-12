@@ -30,6 +30,11 @@ class ActivityListTest(TestCase):
         self.assertEqual(activity_result[0]['id'], 2)
         self.assertEqual(activity_result[1]['id'], 3)
 
+    def tearDown(self):
+        Activity.objects.get(id=1).delete()
+        Activity.objects.get(id=2).delete()
+        Activity.objects.get(id=3).delete()
+
 
 class ActivityCreateTest(TestCase):
 
@@ -42,6 +47,9 @@ class ActivityCreateTest(TestCase):
         activity_create.input = self.activity_data
         activity_create.post()
         self.assertEqual(Activity.objects.get(name="saved").key, "key")
+
+    def tearDown(self):
+    	Activity.objects.all().delete()
 
 
 class ActivityDeleteTest(TestCase):
@@ -74,6 +82,34 @@ class ActivityDeleteTest(TestCase):
     def test_delete_not_existing_activity(self):
         activity_delete = self.delete_activity_prepare(3)
         self.assertRaises(DatabaseError, activity_delete.post)
+
+    def tearDown(self):
+        Activity.objects.get(id=1).delete()
+        Activity.objects.get(id=2).delete()
+
+
+class ActivityDetailTest(TestCase):
+
+    saved_activity = Activity.objects.create(id=1, name='saved', key='key', place='place',
+                                             description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                             end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                             total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
+    published_activity = Activity.objects.create(id=2, name='published', key='key', place='place',
+                                                 description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                                 end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                                 total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
+    def setUp(self):
+        pass
+
+    def test_get_activity_detail(self):
+        activity_detail = ActivityDetail()
+        activity_detail.input = {}
+        activity_detail.input['id'] = 100
+        activity_info_dict = activity_detail.get()
+        self.assertEqual(activity_info_dict['name'], "saved")
+
+    def test_change_activity_detail(self):
+    	pass
 
 
 class ActivityCheckinTest(TestCase):

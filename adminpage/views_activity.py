@@ -113,20 +113,21 @@ class ActivityDetail(APIView):
         activity.book_end = self.input['bookEnd']
         activity.save()
 
-    # 检查活动修改是否符合逻辑
-    def check_change(self, activity):
-        pass
-
     def get(self):
         self.check_input('id')
-        choosen_activity = Activity.objects.get(id=self.input['id'])
+        try:
+            choosen_activity = Activity.objects.get(id=self.input['id'])
+        except:
+            raise DatabaseError(self.input)
         choosen_activity_dict = self.activity_to_dict(choosen_activity)
         return choosen_activity_dict
 
     def post(self):
         self.check_input('id', 'name', 'place', 'picUrl', 'startTime', 'endTime', 'bookStart', 'bookEnd', 'totalTickets', 'status')
-        choosen_activity = Activity.objects.get(id=self.input['id'])
-        self.check_change(choosen_activity)
+        try:
+            choosen_activity = Activity.objects.get(id=self.input['id'])
+        except:
+            raise DataBaseError(self.input)
         self.change_activity_detail(choosen_activity)
 
 
