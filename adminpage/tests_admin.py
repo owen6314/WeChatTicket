@@ -29,11 +29,11 @@ class AdminLoginUnitTest(TestCase):
 
     # 非管理员登录
     def test_login_ordinaryuser(self):
-        admin_login = AdminLogin()
-        admin_login.input = {}
-        admin_login.input['username'] = 'ordinaryUser'
-        admin_login.input['password'] = '12345678b'
-        self.assertRaises(PrivilegeError, admin_login.post)
+        c = Client()
+        response = c.post('/api/a/login', {"username": "ordinaryUser", "password": "12345678b"})
+        response_content = response.content.decode()
+        response_content_dict = json.loads(response_content)
+        self.assertEqual(response_content_dict['code'], 0)
 
     # 管理员登录，密码错误
     def test_login_superuser_wrong_password(self):
