@@ -1,11 +1,13 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from wechat.models import Activity, Ticket
 from codex.baseerror import ValidateError, LogicError, DatabaseError
-from .views_activity import ActivityList, ActivityDelete, ActivityCreate, ImageLoader, ActivityDetail, ActivityMenu, ActivityCheckin
+from adminpage.views_activity import ActivityList, ActivityDelete, ActivityCreate, ImageLoader, ActivityDetail, ActivityMenu, ActivityCheckin
 from datetime import datetime
 from django.utils import timezone
 
 
+# 单元测试
+# 测试Activity相关接口
 class ActivityListTest(TestCase):
 
     def setUp(self):
@@ -49,7 +51,7 @@ class ActivityCreateTest(TestCase):
         self.assertEqual(Activity.objects.get(name="saved").key, "key")
 
     def tearDown(self):
-    	Activity.objects.all().delete()
+        Activity.objects.all().delete()
 
 
 class ActivityDeleteTest(TestCase):
@@ -90,26 +92,67 @@ class ActivityDeleteTest(TestCase):
 
 class ActivityDetailTest(TestCase):
 
-    saved_activity = Activity.objects.create(id=1, name='saved', key='key', place='place',
-                                             description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
-                                             end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                             total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
-    published_activity = Activity.objects.create(id=2, name='published', key='key', place='place',
+    change_activity_data_valid = {"id": 1, "name": "changed", "place": "place", "description": "description", "picUrl": "pic_url",
+                                  "startTime": timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), "endTime": timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)),
+                                  "bookStart": timezone.now(), "bookEnd": timezone.now(), "totalTickets": 1000, "status": Activity.STATUS_PUBLISHED}
+    change_activity_data_invalid = {"id": 500, "name": "changed", "place": "place", "description": "description", "picUrl": "pic_url",
+                                    "startTime": timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), "endTime": timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)),
+                                    "bookStart": timezone.now(), "bookEnd": timezone.now(), "totalTickets": 1000, "status": Activity.STATUS_PUBLISHED}
+
+    def setUp(self):
+        saved_activity = Activity.objects.create(id=1, name='saved', key='key', place='place',
                                                  description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
                                                  end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                                 total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
-    def setUp(self):
-        pass
+                                                 total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
+        published_activity = Activity.objects.create(id=2, name='published', key='key', place='place',
+                                                     description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                                     end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                                     total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
 
-    def test_get_activity_detail(self):
+    def test_get_activity_detail_valid(self):
         activity_detail = ActivityDetail()
         activity_detail.input = {}
-        activity_detail.input['id'] = 100
+        activity_detail.input['id'] = 1
         activity_info_dict = activity_detail.get()
         self.assertEqual(activity_info_dict['name'], "saved")
 
-    def test_change_activity_detail(self):
-    	pass
+    def test_get_activity_detail_invalid(self):
+        activity_detail = ActivityDetail()
+        activity_detail.input = {}
+        activity_detail.input['id'] = 3
+        self.assertRaises(DatabaseError, activity_detail.get)
+
+    def test_change_activity_detail_valid(self):
+        activity_detail = ActivityDetail()
+        activity_detail.input = self.change_activity_data_valid
+        activity_detail.post()
+        self.assertEqual(Activity.objects.get(id=1).name, "changed")
+
+    def test_change_activity_detail_invalid(self):
+        activity_detail = ActivityDetail()
+        activity_detail.input = self.change_activity_data_invalid
+        self.assertRaises(DatabaseError, activity_detail.post)
+
+
+class ActivityMenuTest(TestCase):
+
+    def setUp(self):
+        saved_activity = Activity.objects.create(id=1, name='saved', key='key', place='place',
+                                                 description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                                 end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                                 total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
+        published_activity = Activity.objects.create(id=2, name='published', key='key', place='place',
+                                                     description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                                     end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                                     total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
+
+    def test_get_activity_menu(self):
+        activity_menu = ActivityMenu()
+        activity_list = activity_menu.get()
+        self.assertEqual(len(activity_list), 2)
+        sorted(activity_list, key=lambda x: x['id'])
+        self.assertEqual(activity_list[0]['name'], 'saved')
+        self.assertEqual(activity_list[0]['menuIndex'], 0)
 
 
 class ActivityCheckinTest(TestCase):

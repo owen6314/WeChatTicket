@@ -86,6 +86,7 @@ class CustomWeChatView(WeChatView):
         :param activities: list of Activity
         :return: None
         """
+        print("update menu")
         if activities is not None:
             if len(activities) > 5:
                 cls.logger.warn('Custom menu with %d activities, keep only 5', len(activities))

@@ -25,7 +25,7 @@ class ActivityList(APIView):
         return activity_dict
 
     def get(self):
-        activity_set = Activity.objects.exclude(status=-1)
+        activity_set = Activity.objects.exclude(status=Activity.STATUS_DELETED)
         activity_list = []
         for item in activity_set:
             item_dict = self.activity_to_dict(item)
@@ -127,17 +127,29 @@ class ActivityDetail(APIView):
         try:
             choosen_activity = Activity.objects.get(id=self.input['id'])
         except:
-            raise DataBaseError(self.input)
+            raise DatabaseError(self.input)
         self.change_activity_detail(choosen_activity)
 
 
 class ActivityMenu(APIView):
 
     def get(self):
-        pass
+        activity_list = Activity.objects.exclude(status=Activity.STATUS_DELETED)
+        activity_dict_list = []
+        for activity in activity_list:
+            activity_dict = {}
+            activity_dict['id'] = activity.id
+            activity_dict['name'] = activity.name
+            activity_dict['menuIndex'] = 0
+            activity_dict_list.append(activity_dict)
+        return activity_dict_list
 
     def post(self):
-        pass
+        activity_list = []
+        for i in self.input:
+            activity = Activity.objects.get(id=i)
+            activity_list.append(activity)
+        CustomWeChatView.update_menu(activity_list)
 
 
 class ActivityCheckin(APIView):
