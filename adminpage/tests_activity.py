@@ -1,7 +1,7 @@
 from django.test import TestCase
 from wechat.models import Activity, Ticket
 from codex.baseerror import ValidateError, LogicError, DatabaseError
-from adminpage.views_activity import ActivityList, ActivityDelete, ActivityCreate, ImageLoader, ActivityDetail, ActivityMenu, ActivityCheckin
+from adminpage.views_activity import ActivityList, ActivityDelete, ActivityCreate, ActivityDetail, ActivityMenu, ActivityCheckin
 from datetime import datetime
 from django.utils import timezone
 
@@ -90,6 +90,7 @@ class ActivityDeleteTest(TestCase):
         Activity.objects.get(id=2).delete()
 
 
+# 必做部分：查看活动详情
 class ActivityDetailTest(TestCase):
 
     change_activity_data_valid = {"id": 1, "name": "changed", "place": "place", "description": "description", "picUrl": "pic_url",

@@ -1,11 +1,12 @@
 from codex.baseview import APIView
-from codex.baseerror import ValidateError, PrivilegeError, DatabaseError, LogicError
+from codex.baseerror import ValidateError, DatabaseError, LogicError
 from wechat.views import CustomWeChatView
 from WeChatTicket import settings
 from wechat.models import Activity, Ticket
 from adminpage.models import Image
 from django.db.models import Q
 import time
+from datetime import timezone
 
 
 class ActivityList(APIView):
@@ -15,11 +16,11 @@ class ActivityList(APIView):
         activity_dict['id'] = activity.id
         activity_dict['name'] = activity.name
         activity_dict['description'] = activity.description
-        activity_dict['startTime'] = time.mktime(activity.start_time.timetuple())
-        activity_dict['endTime'] = time.mktime(activity.end_time.timetuple())
+        activity_dict['startTime'] = activity.start_time.timestamp()
+        activity_dict['endTime'] = activity.end_time.timestamp()
         activity_dict['place'] = activity.place
-        activity_dict['bookStart'] = time.mktime(activity.book_start.timetuple())
-        activity_dict['bookEnd'] = time.mktime(activity.book_end.timetuple())
+        activity_dict['bookStart'] = activity.book_start.timestamp()
+        activity_dict['bookEnd'] = activity.book_end.timestamp()
         activity_dict['currentTime'] = int(time.time())
         activity_dict['status'] = activity.status
         return activity_dict
@@ -79,11 +80,11 @@ class ActivityDetail(APIView):
         activity_dict['name'] = activity.name
         activity_dict['key'] = activity.key
         activity_dict['description'] = activity.description
-        activity_dict['startTime'] = time.mktime(activity.start_time.timetuple())
-        activity_dict['endTime'] = time.mktime(activity.end_time.timetuple())
+        activity_dict['startTime'] = activity.start_time.timestamp()
+        activity_dict['endTime'] = activity.end_time.timestamp()
         activity_dict['place'] = activity.place
-        activity_dict['bookStart'] = time.mktime(activity.book_start.timetuple())
-        activity_dict['bookEnd'] = time.mktime(activity.book_end.timetuple())
+        activity_dict['bookStart'] = activity.book_start.timestamp()
+        activity_dict['bookEnd'] = activity.book_end.timestamp()
         activity_dict['totalTickets'] = activity.total_tickets
         activity_dict['picUrl'] = activity.pic_url
         activity_dict['bookedTickets'] = activity.total_tickets - activity.remain_tickets
@@ -100,10 +101,8 @@ class ActivityDetail(APIView):
         activity.name = self.input['name']
         activity.place = self.input['place']
         activity.status = self.input['status']
-
         # 抢票开始后不可修改
         activity.total_tickets = self.input['totalTickets']
-
         # 活动结束后不可修改
         activity.start_time = self.input['startTime']
         activity.end_time = self.input['endTime']

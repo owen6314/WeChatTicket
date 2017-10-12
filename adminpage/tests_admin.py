@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from adminpage.views_admin import AdminLogin, AdminLogout
-from codex.baseerror import ValidateError, PrivilegeError
+from adminpage.views_admin import AdminLogin
+from codex.baseerror import ValidateError
 import json
 
 
@@ -62,5 +62,4 @@ class AdminLogoutTest(TestCase):
         admin_logout.request = self.super_user
         self.assertRaises(ValidateError, admin_logout.post)
 
-    # 非管理员登出
 '''
