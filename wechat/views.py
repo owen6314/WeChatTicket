@@ -2,8 +2,8 @@ from django.utils import timezone
 
 from wechat.wrapper import WeChatView, WeChatLib
 from wechat.handlers import ErrorHandler, DefaultHandler, HelpOrSubscribeHandler, UnbindOrUnsubscribeHandler, \
-     BookEmptyHandler, BindAccountHandler, InvalidMathExpressionHandler, \
-     ValidMathExpressionHandler, ActivityQueryHandler, TicketQueryHandler
+     BookEmptyHandler, BindAccountHandler, InvalidMathExpressionHandler, ValidMathExpressionHandler, \
+     ActivityQueryHandler, TicketQueryHandler, GetTicketHandler, ReturnTicketHandler
 from wechat.models import Activity
 from WeChatTicket.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
@@ -14,7 +14,8 @@ class CustomWeChatView(WeChatView):
 
     handlers = [
         HelpOrSubscribeHandler, UnbindOrUnsubscribeHandler, BindAccountHandler, BookEmptyHandler,
-        ActivityQueryHandler, TicketQueryHandler, InvalidMathExpressionHandler, ValidMathExpressionHandler
+        ActivityQueryHandler, TicketQueryHandler, GetTicketHandler, ReturnTicketHandler,
+        InvalidMathExpressionHandler, ValidMathExpressionHandler
     ]
     error_message_handler = ErrorHandler
     default_handler = DefaultHandler

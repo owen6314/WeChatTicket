@@ -1,0 +1,4 @@
+您目前拥有的电子票有:
+{% for ticket in tickets %}
+<a href="{{ ticket.url }}">{{ticket.name}}</a>
+{% endfor %}

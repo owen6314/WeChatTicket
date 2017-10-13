@@ -103,6 +103,9 @@ class WeChatHandler(object):
     def get_math_expression_value(self):
         return eval(self.input['Content'])
 
+    def get_activity_name_in_command(self):
+        return self.input['Content'].split()[1]
+
 
 class WeChatEmptyHandler(WeChatHandler):
 
