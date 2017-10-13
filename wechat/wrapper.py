@@ -12,11 +12,10 @@ from WeChatTicket.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
 from django.http import Http404, HttpResponse
 from django.template.loader import get_template
-
 from WeChatTicket import settings
 from codex.baseview import BaseView
 from wechat.models import User, Activity
-from django.utils import timezone
+
 
 __author__ = "Epsirom"
 
@@ -103,11 +102,6 @@ class WeChatHandler(object):
 
     def get_math_expression_value(self):
         return eval(self.input['Content'])
-    
-    # 得到最近三天可以抢票的活动
-    def get_recent_activities(self):
-        current_time = timezone.now()
-
 
 
 class WeChatEmptyHandler(WeChatHandler):

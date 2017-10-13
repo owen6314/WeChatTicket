@@ -1,0 +1,4 @@
+最近三天可以抢票的活动有:
+{% for activity in activities %}
+<a href="{{ activity.url }}">{{activity.name}}</a>
+{% endfor %}

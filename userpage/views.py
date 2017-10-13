@@ -49,7 +49,7 @@ class ActivityDetail(APIView):
 
     def get(self):
         self.check_input('id')
-        activity = Activity.get(id=self.input['id'])
+        activity = Activity.objects.get(id=self.input['id'])
         if activity.status == Activity.STATUS_PUBLISHED:
             return self.activity_to_dict(activity)
         else:

@@ -6,7 +6,9 @@ from wechat.models import Activity, Ticket
 from adminpage.models import Image
 from django.db.models import Q
 import time
-from datetime import timezone
+from django.utils import timezone
+from wechat.wrapper import WeChatLib
+from WeChatTicket.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
 
 class ActivityList(APIView):
@@ -48,7 +50,6 @@ class ActivityDelete(APIView):
         activity.save()
 
 
-# 时间存在问题
 class ActivityCreate(APIView):
 
     def post(self):
@@ -65,7 +66,7 @@ class ImageLoader(APIView):
         self.check_input('image')
         i = Image(image=self.request.FILES['image'])
         i.save()
-        image_url = settings.SITE_DOMAIN + "/wechat/media/upload_img/" + str(self.input['image'][0])
+        image_url = settings.SITE_DOMAIN + "/media/upload_img/" + str(self.input['image'][0])
         return image_url
 
 
@@ -132,14 +133,27 @@ class ActivityDetail(APIView):
 
 class ActivityMenu(APIView):
 
+    def get_current_menu_list(self):
+        lib = WeChatLib(WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET)
+        wechat_menu = lib.get_wechat_menu()
+        wechat_menu_activity_list = []
+        for i in range(0, len(wechat_menu[1]['sub_button'])):
+            wechat_menu_activity_list.append(wechat_menu[1]['sub_button'][i]['name'])
+        return wechat_menu_activity_list
+
+    # TODO:过时活动的清除
     def get(self):
-        activity_list = Activity.objects.exclude(status=Activity.STATUS_DELETED)
+        current_menu_list = self.get_current_menu_list()
+        activity_list = Activity.objects.filter(Q(status=Activity.STATUS_PUBLISHED))
         activity_dict_list = []
         for activity in activity_list:
             activity_dict = {}
             activity_dict['id'] = activity.id
             activity_dict['name'] = activity.name
-            activity_dict['menuIndex'] = 0
+            if(activity.name in current_menu_list):
+                activity_dict['menuIndex'] = current_menu_list.index(activity.name) + 1
+            else:
+                activity_dict['menuIndex'] = 0
             activity_dict_list.append(activity_dict)
         return activity_dict_list
 

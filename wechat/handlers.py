@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 #
 from wechat.wrapper import WeChatHandler
-
+from wechat.models import User, Activity
+from django.utils import timezone
+from django.db.models import Q
+import datetime
+from WeChatTicket import settings
 
 __author__ = "Epsirom"
 
@@ -70,11 +74,22 @@ class BookEmptyHandler(WeChatHandler):
 # 抢啥：显示三天内可抢票活动
 class ActivityQueryHandler(WeChatHandler):
 
+    def get_recent_activities(self):
+        current_time = timezone.now()
+        recent_activities = Activity.objects.filter(Q(book_end__gt=current_time) & Q(book_start__lt=current_time + datetime.timedelta(days=3)) & Q(status=Activity.STATUS_PUBLISHED))
+        recent_activities_include_url = []
+        for activity in recent_activities:
+            activity_include_url = {}
+            activity_include_url['name'] = activity.name
+            activity_include_url['url'] = settings.get_url('u/activity', {'id': activity.id})
+            recent_activities_include_url.append(activity_include_url)
+        return recent_activities_include_url
+
     def check(self):
         return self.is_text('近期活动') or self.is_text("我好无聊") or self.is_event_click(self.view.event_keys['book_what'])
 
     def handle(self):
-        return self.reply_text(self.get_message('book_what'), activities=self.get_recent_activities())
+        return self.reply_text(self.get_message('book_what', activities=self.get_recent_activities()))
 
 
 # 查票：查看用户自己获得的票
@@ -85,6 +100,7 @@ class TicketQueryHandler(WeChatHandler):
 
     def handle(self):
         pass
+
 
 class InvalidMathExpressionHandler(WeChatHandler):
 
