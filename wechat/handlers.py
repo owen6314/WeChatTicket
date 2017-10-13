@@ -74,7 +74,7 @@ class ActivityQueryHandler(WeChatHandler):
         return self.is_text('近期活动') or self.is_text("我好无聊") or self.is_event_click(self.view.event_keys['book_what'])
 
     def handle(self):
-        return self.reply_text(self.get_message('book_empty'))
+        return self.reply_text(self.get_message('book_what'), activities=self.get_recent_activities())
 
 
 # 查票：查看用户自己获得的票

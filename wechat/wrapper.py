@@ -15,8 +15,8 @@ from django.template.loader import get_template
 
 from WeChatTicket import settings
 from codex.baseview import BaseView
-from wechat.models import User
-
+from wechat.models import User, Activity
+from django.utils import timezone
 
 __author__ = "Epsirom"
 
@@ -95,14 +95,19 @@ class WeChatHandler(object):
         except:
             return False
 
-    def get_math_expression_value(self):
-        return eval(self.input['Content'])
-
     def url_help(self):
         return settings.get_url('u/help')
 
     def url_bind(self):
         return settings.get_url('u/bind', {'openid': self.user.open_id})
+
+    def get_math_expression_value(self):
+        return eval(self.input['Content'])
+    
+    # 得到最近三天可以抢票的活动
+    def get_recent_activities(self):
+        current_time = timezone.now()
+
 
 
 class WeChatEmptyHandler(WeChatHandler):
