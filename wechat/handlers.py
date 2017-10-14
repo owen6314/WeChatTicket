@@ -173,7 +173,7 @@ class GetTicketHandler(WeChatHandler):
         return self.is_text_command("抢票") or self.is_event_click(*event_keys)
 
     def handle(self):
-        if self.is_event("click"):
+        if self.is_event("CLICK"):
             activity_key = Activity.objects.get(id=int(self.input['EventKey'].split("_")[-1])).key
         else:
             activity_key = self.get_activity_name_in_command()
