@@ -9,6 +9,7 @@ import time
 from django.utils import timezone
 from wechat.wrapper import WeChatLib
 from WeChatTicket.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
+import os
 
 
 class ActivityList(APIView):
@@ -66,7 +67,8 @@ class ImageLoader(APIView):
         self.check_input('image')
         i = Image(image=self.request.FILES['image'])
         i.save()
-        image_url = settings.SITE_DOMAIN + "/" + settings.STATIC_ROOT + "/static/upload_img/" + str(int(timezone.now().timestamp())) + str(self.input['image'][0])
+        image_name = str(int(timezone.now().timestamp())) + str(self.input['image'][0])
+        image_url = os.path.join(settings.MEDIA_ROOT, image_name)
         return image_url
 
 

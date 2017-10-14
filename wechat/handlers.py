@@ -7,7 +7,8 @@ from django.db.models import Q
 import datetime
 from WeChatTicket import settings
 from codex.baseerror import DatabaseError
-
+from wechat.wrapper import WeChatLib
+from WeChatTicket.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 __author__ = "Epsirom"
 
 
@@ -72,7 +73,7 @@ class BookEmptyHandler(WeChatHandler):
         return self.reply_text(self.get_message('book_empty'))
 
 
-# 抢啥：显示一个一周内开始抢票的活动（最近）以及抢票开始时间
+# 抢啥：显示一周内可抢的活动
 class ActivityQueryHandler(WeChatHandler):
 
     def get_recent_activities(self):
@@ -99,7 +100,7 @@ class ActivityQueryHandler(WeChatHandler):
         return self.reply_news(article_list)
 
 
-# 查票：查看用户自己获得的票
+# 查票：查看用户的全部票
 class TicketQueryHandler(WeChatHandler):
 
     def get_tickets(self):
@@ -167,10 +168,16 @@ class GetTicketHandler(WeChatHandler):
 
     # 按键
     def check(self):
-        return self.is_text_command("抢票")
+        wechat_lib = WeChatLib(WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET)
+        menu = wechat_lib.get_wechat_menu()[-1]['sub_button']
+        event_keys = [activity['key'] for activity in menu]
+        return self.is_text_command("抢票") or self.is_event_click(*event_keys)
 
     def handle(self):
-        activity_key = self.get_activity_name_in_command()
+        if self.is_event("click"):
+            activity_key = Activity.objects.get(id=int(self.input['EventKey'].split("_")[-1])).key
+        else:
+            activity_key = self.get_activity_name_in_command()
         status = self.check_status(activity_key)
         if(status == self.STATUS_NOT_BIND):
             return self.reply_text(self.get_message('not_bind'))
@@ -184,6 +191,16 @@ class GetTicketHandler(WeChatHandler):
             target_activity = Activity.objects.get(key=activity_key)
             self.give_ticket_to_user(target_activity)
             return self.reply_text(self.get_message('get_ticket_success'))
+
+
+# 取票
+class GetTicketHandler(WeChatHandler):
+
+    def check(self):
+        return self.is_text_command("退票")
+
+    def handle(self):
+        pass
 
 
 # 退票
