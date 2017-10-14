@@ -166,7 +166,6 @@ class GetTicketHandler(WeChatHandler):
         except:
             raise DatabaseError(self.input)
 
-    # 按键
     def check(self):
         wechat_lib = WeChatLib(WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET)
         menu = wechat_lib.get_wechat_menu()[-1]['sub_button']
@@ -191,16 +190,6 @@ class GetTicketHandler(WeChatHandler):
             target_activity = Activity.objects.get(key=activity_key)
             self.give_ticket_to_user(target_activity)
             return self.reply_text(self.get_message('get_ticket_success'))
-
-
-# 取票
-class GetTicketHandler(WeChatHandler):
-
-    def check(self):
-        return self.is_text_command("退票")
-
-    def handle(self):
-        pass
 
 
 # 退票
