@@ -174,7 +174,8 @@ class GetTicketHandler(WeChatHandler):
 
     def handle(self):
         if self.is_event("CLICK"):
-            activity_key = Activity.objects.get(id=int(self.input['EventKey'].split("_")[-1])).key
+            activity_id = int(self.input['EventKey'].split("_")[-1])
+            activity_key = Activity.objects.get(id=activity_id).key
         else:
             activity_key = self.get_activity_name_in_command()
         status = self.check_status(activity_key)
