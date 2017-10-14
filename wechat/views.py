@@ -1,5 +1,4 @@
 from django.utils import timezone
-
 from wechat.wrapper import WeChatView, WeChatLib
 from wechat.handlers import ErrorHandler, DefaultHandler, HelpOrSubscribeHandler, UnbindOrUnsubscribeHandler, \
      BookEmptyHandler, BindAccountHandler, InvalidMathExpressionHandler, ValidMathExpressionHandler, \

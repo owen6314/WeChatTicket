@@ -123,7 +123,25 @@ class GetTicketHandler(WeChatHandler):
     STATUS_NO_ACTIVITY = -1
     STATUS_NO_TICKET = -2
     STATUS_NOT_BIND = -3
-    STATUS_HAS_GOTTEN = -4
+    STATUS_HAS_GOT = -4
+
+    def check_status(self, activity_key):
+        # 未绑定
+        if self.user.student_id == "":
+            return self.STATUS_NOT_BIND
+        # 不存在活动
+        try:
+            target_activity = Activity.objects.get(Q(key=activity_key) & Q(status=Activity.STATUS_PUBLISHED))
+        except:
+            return self.STATUS_NO_ACTIVITY
+        # 活动票已抢完
+        if target_activity.remain_tickets <= 0:
+            return self.STATUS_NO_TICKET
+        # 用户已经抢过票
+        ticket = Ticket.objects.filter(Q(student_id=self.user.student_id) & Q(activity=target_activity))
+        if ticket:
+            return self.STATUS_HAS_GOT
+        return self.STATUS_VALID
 
     def give_ticket_to_user(self, activity):
         # 注意并发问题
@@ -142,55 +160,73 @@ class GetTicketHandler(WeChatHandler):
         return self.is_text_command("抢票")
 
     def handle(self):
-        # 未绑定
-        if self.user.student_id == "":
-            return self.reply_text(self.get_message('not_bind'))
         activity_key = self.get_activity_name_in_command()
-        # 不存在这样的活动
-        try:
-            target_activity = Activity.objects.get(key=activity_key)
-        except:
+        status = self.check_status(activity_key)
+        if(status == self.STATUS_NOT_BIND):
+            return self.reply_text(self.get_message('not_bind'))
+        elif(status == self.STATUS_NO_ACTIVITY):
             return self.reply_text(self.get_message('no_such_activity'))
-        # 活动票已抢完
-        if target_activity.remain_tickets <= 0:
+        elif(status == self.STATUS_NO_TICKET):
             return self.reply_text(self.get_message('ticket_empty'))
-
-        # 已抢过票
-        ticket = Ticket.objects.filter(Q(student_id=self.user.student_id) & Q(activity=target_activity))
-        if ticket:
+        elif(status == self.STATUS_HAS_GOT):
             return self.reply_text(self.get_message("already_got_ticket"))
-        self.give_ticket_to_user(target_activity)
-        return self.reply_text(self.get_message('get_ticket_success'))
+        else:
+            target_activity = Activity.objects.get(key=activity_key)
+            self.give_ticket_to_user(target_activity)
+            return self.reply_text(self.get_message('get_ticket_success'))
 
 
 # 退票
 class ReturnTicketHandler(WeChatHandler):
 
+    STATUS_VALID = 0
+    STATUS_NO_ACTIVITY = -1
+    STATUS_NO_TICKET = -2
+    STATUS_NOT_BIND = -3
+    STATUS_BEEN_USED = -4
+
     def return_ticket(self, activity, ticket):
         ticket.status = Ticket.STATUS_CANCELLED
         ticket.save()
+
+    def check_status(self, activity_key):
+        # 未绑定
+        if self.user.student_id == "":
+            return self.STATUS_NOT_BIND
+        # 无对应活动
+        try:
+            target_activity = Activity.objects.get(key=activity_key)
+        except:
+            return self.STATUS_NO_ACTIVITY
+        # 没有抢票
+        ticket_set = Ticket.objects.filter(Q(student_id=self.user.student_id) & Q(activity=target_activity))
+        if not ticket_set:
+            return self.STATUS_NO_TICKET
+        ticket = ticket_set[0]
+        # 抢过票，但是已经退票
+        if ticket.status == Ticket.STATUS_CANCELLED:
+            return self.STATUS_NO_TICKET
+        # 票已经被使用
+        if ticket.status == Ticket.STATUS_USED:
+            return self.STATUS_BEEN_USED
+        return self.STATUS_VALID
 
     def check(self):
         return self.is_text_command("退票")
 
     def handle(self):
-        if self.user.student_id == "":
-            return self.reply_text(self.get_message('not_bind'))
         activity_key = self.get_activity_name_in_command()
-        # 不存在这样的活动
-        try:
-            target_activity = Activity.objects.get(key=activity_key)
-        except:
+        status = self.check_status(activity_key)
+        if status == self.STATUS_NOT_BIND:
+            return self.reply_text(self.get_message('not_bind'))
+        elif status == self.STATUS_NO_ACTIVITY:
             return self.reply_text(self.get_message('no_such_activity'))
-        ticket_set = Ticket.objects.filter(Q(student_id=self.user.student_id) & Q(activity=target_activity))
-        if not ticket_set:
+        elif status == self.STATUS_NO_TICKET:
             return self.reply_text(self.get_message("no_ticket_to_return"))
-        else:
-            ticket = ticket_set[0]
-        if ticket.status == Ticket.STATUS_CANCELLED:
-            return self.reply_text(self.get_message("no_ticket_to_return"))
-        if ticket.status == Ticket.STATUS_USED:
+        elif status == self.STATUS_USED:
             return self.reply_text(self.get_message("ticket_has_been_used"))
+        target_activity = Activity.objects.get(key=activity_key)
+        ticket = Ticket.objects.get(Q(student_id=self.user.student_id) & Q(activity=target_activity))
         self.return_ticket(target_activity, ticket)
         return self.reply_text(self.get_message("return_ticket_success"))
 

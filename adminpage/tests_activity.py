@@ -150,9 +150,9 @@ class ActivityMenuTest(TestCase):
     def test_get_activity_menu(self):
         activity_menu = ActivityMenu()
         activity_list = activity_menu.get()
-        self.assertEqual(len(activity_list), 2)
+        self.assertEqual(len(activity_list), 1)
         sorted(activity_list, key=lambda x: x['id'])
-        self.assertEqual(activity_list[0]['name'], 'saved')
+        self.assertEqual(activity_list[0]['name'], 'published')
         self.assertEqual(activity_list[0]['menuIndex'], 0)
 
 

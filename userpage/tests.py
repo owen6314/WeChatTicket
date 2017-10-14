@@ -7,6 +7,7 @@ from unittest.mock import Mock, patch
 from wechat.models import User
 
 
+# 用户绑定相关的单元测试
 class URLTest(TestCase):
 
     def test_u_bind(self):
