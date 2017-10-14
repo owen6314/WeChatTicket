@@ -67,7 +67,7 @@ class ImageLoader(APIView):
         self.check_input('image')
         i = Image(image=self.request.FILES['image'])
         i.save()
-        image_name = str(int(timezone.now().timestamp())) + str(self.input['image'][0])
+        image_name = str(self.input['image'][0])
         image_url = os.path.join(settings.MEDIA_ROOT, image_name)
         return image_url
 
