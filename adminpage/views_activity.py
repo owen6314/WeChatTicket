@@ -69,7 +69,8 @@ class ImageLoader(APIView):
         i.save()
         image_name = str(self.input['image'][0])
         image_url = os.path.join(settings.MEDIA_ROOT, image_name)
-        return image_url
+        image_url_with_domain = settings.SITE_DOMAIN + image_url
+        return image_url_with_domain
 
 
 class ActivityDetail(APIView):
