@@ -11,18 +11,18 @@ from django.utils import timezone
 class ActivityListTest(TestCase):
 
     def setUp(self):
-        deleted_activity = Activity.objects.create(id=1, name='deleted', key='key', place='place',
-                                                   description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
-                                                   end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                                   total_tickets=1000, status=Activity.STATUS_DELETED, remain_tickets=1000)
-        saved_activity = Activity.objects.create(id=2, name='saved', key='key', place='place',
-                                                 description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
-                                                 end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                                 total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
-        published_activity = Activity.objects.create(id=3, name='published', key='key', place='place',
-                                                     description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
-                                                     end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                                     total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
+        Activity.objects.create(id=1, name='deleted', key='key', place='place',
+                                description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                total_tickets=1000, status=Activity.STATUS_DELETED, remain_tickets=1000)
+        Activity.objects.create(id=2, name='saved', key='key', place='place',
+                                description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
+        Activity.objects.create(id=3, name='published', key='key', place='place',
+                                description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
 
     def test_activity_list(self):
         activity_list = ActivityList()
@@ -57,14 +57,14 @@ class ActivityCreateTest(TestCase):
 class ActivityDeleteTest(TestCase):
 
     def setUp(self):
-        deleted_activity = Activity.objects.create(id=1, name='deleted', key='key', place='place',
-                                                   description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
-                                                   end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                                   total_tickets=1000, status=Activity.STATUS_DELETED, remain_tickets=1000)
-        saved_activity = Activity.objects.create(id=2, name='saved', key='key', place='place',
-                                                 description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
-                                                 end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                                 total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
+        Activity.objects.create(id=1, name='deleted', key='key', place='place',
+                                description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                total_tickets=1000, status=Activity.STATUS_DELETED, remain_tickets=1000)
+        Activity.objects.create(id=2, name='saved', key='key', place='place',
+                                description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
 
     def delete_activity_prepare(self, activity_id):
         activity_delete = ActivityDelete()
@@ -101,14 +101,14 @@ class ActivityDetailTest(TestCase):
                                     "bookStart": timezone.now(), "bookEnd": timezone.now(), "totalTickets": 1000, "status": Activity.STATUS_PUBLISHED}
 
     def setUp(self):
-        saved_activity = Activity.objects.create(id=1, name='saved', key='key', place='place',
-                                                 description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
-                                                 end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                                 total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
-        published_activity = Activity.objects.create(id=2, name='published', key='key', place='place',
-                                                     description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
-                                                     end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                                     total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
+        Activity.objects.create(id=1, name='saved', key='key', place='place',
+                                description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
+        Activity.objects.create(id=2, name='published', key='key', place='place',
+                                description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
 
     def test_get_activity_detail_valid(self):
         activity_detail = ActivityDetail()
@@ -138,14 +138,14 @@ class ActivityDetailTest(TestCase):
 class ActivityMenuTest(TestCase):
 
     def setUp(self):
-        saved_activity = Activity.objects.create(id=1, name='saved', key='key', place='place',
-                                                 description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
-                                                 end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                                 total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
-        published_activity = Activity.objects.create(id=2, name='published', key='key', place='place',
-                                                     description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
-                                                     end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
-                                                     total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
+        Activity.objects.create(id=1, name='saved', key='key', place='place',
+                                description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                total_tickets=1000, status=Activity.STATUS_SAVED, remain_tickets=1000)
+        Activity.objects.create(id=2, name='published', key='key', place='place',
+                                description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
 
     def test_get_activity_menu(self):
         activity_menu = ActivityMenu()

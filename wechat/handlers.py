@@ -95,7 +95,6 @@ class ActivityQueryHandler(WeChatHandler):
             article['Description'] = activity.description
             article['Url'] = settings.get_url('u/activity', {'id': activity.id})
             article['PicUrl'] = activity.pic_url
-            print(activity.pic_url)
             article_list.append(article)
         return self.reply_news(article_list)
 
