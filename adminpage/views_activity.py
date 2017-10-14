@@ -147,7 +147,7 @@ class ActivityMenu(APIView):
     # TODO:过时活动的清除
     def get(self):
         current_menu_list = self.get_current_menu_list()
-        activity_list = Activity.objects.filter(Q(status=Activity.STATUS_PUBLISHED))
+        activity_list = Activity.objects.filter(Q(status=Activity.STATUS_PUBLISHED) & Q(book_start__lt=timezone.now()) & Q(book_end__gt=timezone.now()))
         activity_dict_list = []
         for activity in activity_list:
             activity_dict = {}

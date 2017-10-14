@@ -2,9 +2,8 @@ from django.test import TestCase
 from wechat.models import Activity, Ticket
 from codex.baseerror import ValidateError, LogicError, DatabaseError
 from adminpage.views_activity import ActivityList, ActivityDelete, ActivityCreate, ActivityDetail, ActivityMenu, ActivityCheckin
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
-
 
 # 单元测试
 # 测试Activity相关接口
@@ -145,6 +144,11 @@ class ActivityMenuTest(TestCase):
         Activity.objects.create(id=2, name='published', key='key', place='place',
                                 description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
                                 end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now(), book_end=timezone.now(),
+                                total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
+        Activity.objects.create(id=3, name='published', key='key', place='place',
+                                description='description', start_time=timezone.make_aware(datetime(2017, 12, 18, 20, 0, 0, 0)), pic_url="url",
+                                end_time=timezone.make_aware(datetime(2017, 12, 18, 21, 0, 0, 0)), book_start=timezone.now() - timedelta(days=1), 
+                                book_end=timezone.now() + timedelta(days=1),
                                 total_tickets=1000, status=Activity.STATUS_PUBLISHED, remain_tickets=1000)
 
     def test_get_activity_menu(self):
