@@ -155,8 +155,6 @@ STATIC_URL = '/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 # Site and URL
 SITE_DOMAIN = CONFIGS['SITE_DOMAIN'].rstrip('/')
 

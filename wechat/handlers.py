@@ -72,25 +72,32 @@ class BookEmptyHandler(WeChatHandler):
         return self.reply_text(self.get_message('book_empty'))
 
 
-# 抢啥：显示三天内可抢票活动
+# 抢啥：显示一个一周内开始抢票的活动（最近）以及抢票开始时间
 class ActivityQueryHandler(WeChatHandler):
 
     def get_recent_activities(self):
         current_time = timezone.now()
-        recent_activities = Activity.objects.filter(Q(book_end__gt=current_time) & Q(book_start__lt=current_time + datetime.timedelta(days=3)) & Q(status=Activity.STATUS_PUBLISHED))
-        recent_activities_include_url = []
-        for activity in recent_activities:
-            activity_include_url = {}
-            activity_include_url['name'] = activity.name
-            activity_include_url['url'] = settings.get_url('u/activity', {'id': activity.id})
-            recent_activities_include_url.append(activity_include_url)
-        return recent_activities_include_url
+        recent_activities = Activity.objects.filter(Q(book_start__lt=current_time + datetime.timedelta(days=7)) &
+                                                    Q(status=Activity.STATUS_PUBLISHED) & Q(book_end__gt=current_time)).order_by('book_start')
+        return recent_activities
 
     def check(self):
-        return self.is_text('近期活动', '我好无聊') or self.is_event_click(self.view.event_keys['book_what'])
+        return self.is_text('近期活动', '我要抢票') or self.is_event_click(self.view.event_keys['book_what'])
 
     def handle(self):
-        return self.reply_text(self.get_message('book_what', activities=self.get_recent_activities()))
+        recent_activities = self.get_recent_activities()
+        if not recent_activities:
+            return self.reply_text(self.get_message('book_empty'))
+        article_list = []
+        for activity in recent_activities:
+            article = {}
+            article['Title'] = activity.name
+            article['Description'] = activity.description
+            article['Url'] = settings.get_url('u/activity', {'id': activity.id})
+            article['PicUrl'] = activity.pic_url
+            print(activity.pic_url)
+            article_list.append(article)
+        return self.reply_news(article_list)
 
 
 # 查票：查看用户自己获得的票
@@ -98,14 +105,7 @@ class TicketQueryHandler(WeChatHandler):
 
     def get_tickets(self):
         tickets = Ticket.objects.filter(Q(student_id=self.user.student_id) & Q(status=Ticket.STATUS_VALID))
-        tickets_include_url = []
-        for ticket in tickets:
-            ticket_include_url = {}
-            ticket_include_url['name'] = ticket.activity.name
-            ticket_include_url['url'] = settings.get_url('u/ticket', {'ticket': ticket.unique_id, 'openid': self.user.open_id})
-            print(ticket_include_url['url'])
-            tickets_include_url.append(ticket_include_url)
-        return tickets_include_url
+        return tickets
 
     def check(self):
         return self.is_text('查票') or self.is_event_click(self.view.event_keys['get_ticket'])
@@ -113,7 +113,18 @@ class TicketQueryHandler(WeChatHandler):
     def handle(self):
         if self.user.student_id == "":
             return self.reply_text(self.get_message('not_bind'))
-        return self.reply_text(self.get_message('query_ticket', tickets=self.get_tickets()))
+        user_tickets = self.get_tickets()
+        if not user_tickets:
+            return self.reply_text(self.get_message('user_no_ticket'))
+        article_list = []
+        for ticket in user_tickets:
+            article = {}
+            article['Title'] = ticket.activity.name + ":电子票"
+            article['Description'] = "点击查看电子票详情"
+            ticket_open_id = User.objects.get(student_id=ticket.student_id).open_id
+            article['Url'] = settings.get_url('u/ticket', {'openid': ticket_open_id, 'ticket': ticket.unique_id})
+            article_list.append(article)
+        return self.reply_news(article_list)
 
 
 # 抢票
@@ -223,7 +234,7 @@ class ReturnTicketHandler(WeChatHandler):
             return self.reply_text(self.get_message('no_such_activity'))
         elif status == self.STATUS_NO_TICKET:
             return self.reply_text(self.get_message("no_ticket_to_return"))
-        elif status == self.STATUS_USED:
+        elif status == self.STATUS_BEEN_USED:
             return self.reply_text(self.get_message("ticket_has_been_used"))
         target_activity = Activity.objects.get(key=activity_key)
         ticket = Ticket.objects.get(Q(student_id=self.user.student_id) & Q(activity=target_activity))

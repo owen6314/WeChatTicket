@@ -105,7 +105,6 @@
     $(function () {
         swig.setDefaultTZOffset(new Date().getTimezoneOffset());
         render();
-        alert(urlParam.openid)
         api.get('/api/u/ticket/detail', {openid: urlParam.openid, ticket: urlParam.ticket}, function (data) {
             updateDate(data, 'startTime', 'endTime', 'currentTime');
             locals.ticket = data;
