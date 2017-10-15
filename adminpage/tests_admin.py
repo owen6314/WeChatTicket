@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from adminpage.views_admin import AdminLogin
+from adminpage.views_admin import AdminLogin, AdminLogout
 from codex.baseerror import ValidateError
 import json
 
@@ -43,7 +43,7 @@ class AdminLoginUnitTest(TestCase):
         admin_login.input['password'] = '12345678b'
         self.assertRaises(ValidateError, admin_login.post)
 
-'''
+
 class AdminLogoutTest(TestCase):
 
     def setUp(self):
@@ -53,13 +53,5 @@ class AdminLogoutTest(TestCase):
     # 路由测试
     def test_logout_url(self):
         c = Client()
-        # response = c.post('/api/a/login', {"username": "admin", "password": "12345678a"})
-        #response = c.post('/api/a/logout')
-
-    # 管理员登出
-    def test_admin_logout(self):
-        admin_logout = AdminLogout()
-        admin_logout.request = self.super_user
-        self.assertRaises(ValidateError, admin_logout.post)
-
-'''
+        response = c.post('/api/a/login', {"username": "admin", "password": "12345678a"})
+        self.assertEqual(response.status_code, 200)

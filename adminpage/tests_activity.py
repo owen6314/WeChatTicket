@@ -5,6 +5,7 @@ from adminpage.views_activity import ActivityList, ActivityDelete, ActivityCreat
 from datetime import datetime, timedelta
 from django.utils import timezone
 
+
 # 单元测试
 # 测试Activity相关接口
 class ActivityListTest(TestCase):

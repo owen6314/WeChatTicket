@@ -71,7 +71,6 @@ class TicketDetail(APIView):
         return ticket_dict
 
     def get(self):
-        print(self.input)
         self.check_input('openid', 'ticket')
         ticket = Ticket.objects.get(unique_id=self.input['ticket'])
         return self.ticket_to_dict(ticket)

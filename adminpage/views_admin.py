@@ -17,7 +17,7 @@ class AdminLogin(APIView):
             raise DatabaseError(self.input)
 
     def get(self):
-        if not self.request.user:
+        if not self.request.user.is_authenticated():
             raise ValidateError(self.input)
 
     def post(self):
